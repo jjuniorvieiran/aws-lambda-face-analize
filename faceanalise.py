@@ -56,6 +56,7 @@ def publica_dados(dados_json):
     arquivo = s3.Object('fa-site-jr', 'dados.json')
     arquivo.put(Body=json.dumps(dados_json))
 
+
 def exclui_imagem_colecao(faceId_detectadas):
     client.delete_faces(
         CollectionId='faces',
@@ -63,12 +64,13 @@ def exclui_imagem_colecao(faceId_detectadas):
     )
 
 
-faces_detectadas = detecta_faces()
-faceId_detectadas = cria_lista_faceId_detectadas(faces_detectadas)
-resultado_comparacao = compara_imagens(faceId_detectadas)
-dados_json = gera_dados_json(resultado_comparacao)
-publica_dados(dados_json)
-exclui_imagem_colecao(faceId_detectadas)
-print (json.dumps(dados_json, indent=4))
-# print (faceId_detectadas)
-# print (json.dumps(faces_detectadas,indent=4))
+def main(event, context):
+    faces_detectadas = detecta_faces()
+    faceId_detectadas = cria_lista_faceId_detectadas(faces_detectadas)
+    resultado_comparacao = compara_imagens(faceId_detectadas)
+    dados_json = gera_dados_json(resultado_comparacao)
+    publica_dados(dados_json)
+    exclui_imagem_colecao(faceId_detectadas)
+    print (json.dumps(dados_json, indent=4))
+    # print (faceId_detectadas)
+    # print (json.dumps(faces_detectadas,indent=4))
