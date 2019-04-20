@@ -20,12 +20,12 @@ def detecta_faces():
 
     return faces_detectadas
 
+
 def cria_lista_faceId_detectadas(faces_detectadas):
     faceId_detectadas = []
     for imagens in range(len(faces_detectadas['FaceRecords'])):
         faceId_detectadas.append(faces_detectadas['FaceRecords'][imagens]['Face']['FaceId'])
     return faceId_detectadas
-
 
 
 def compara_imagens(faceId_detectadas):
@@ -45,7 +45,7 @@ def compara_imagens(faceId_detectadas):
 def gera_dados_json(resultado_comparacao):
     dados_json = []
     for face_matches in resultado_comparacao:
-        if(len(face_matches.get('FaceMatches'))) >= 1:
+        if (len(face_matches.get('FaceMatches'))) >= 1:
             perfil = dict(nome=face_matches['FaceMatches'][0]['Face']['ExternalImageId'],
                           faceMach=round(face_matches['FaceMatches'][0]['Similarity'], 2))
             dados_json.append(perfil)
@@ -56,9 +56,11 @@ def publica_dados(dados_json):
     arquivo = s3.Object('fa-site-jr', 'dados.json')
     arquivo.put(Body=json.dumps(dados_json))
 
-
-
-
+def exclui_imagem_colecao(faceId_detectadas):
+    client.delete_faces(
+        CollectionId='faces',
+        FaceIds=faceId_detectadas
+    )
 
 
 faces_detectadas = detecta_faces()
@@ -66,6 +68,7 @@ faceId_detectadas = cria_lista_faceId_detectadas(faces_detectadas)
 resultado_comparacao = compara_imagens(faceId_detectadas)
 dados_json = gera_dados_json(resultado_comparacao)
 publica_dados(dados_json)
+exclui_imagem_colecao(faceId_detectadas)
 print (json.dumps(dados_json, indent=4))
-#print (faceId_detectadas)
-#print (json.dumps(faces_detectadas,indent=4))
+# print (faceId_detectadas)
+# print (json.dumps(faces_detectadas,indent=4))
